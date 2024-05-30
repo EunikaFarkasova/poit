@@ -13,5 +13,9 @@ $(document).ready(function() {
             $('#log').prepend('Received #'+msg.count+': '+JSON.stringify(msg.data)+'<br>').html();
         });
     }); 
-             
+    
+    $('form#disconnect').submit(function(event) {
+        socket.emit('disconnect_request');
+        return false; 
+    });   
 });

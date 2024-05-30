@@ -11,6 +11,9 @@ socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock() 
 
+def background_thread(args):
+    print(args)
+
 @app.route('/')
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
@@ -20,6 +23,12 @@ def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1 
     print(message)
 
+@socketio.on('disconnect_request', namespace='/test')
+def disconnect_request():
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    emit('my_response',
+         {'data': 'Disconnected!', 'count': session['receive_count']})
+
 @socketio.on('connect', namespace='/test')
 def test_connect():
     global thread
@@ -27,3 +36,10 @@ def test_connect():
         if thread is None:
             thread = socketio.start_background_task(target=background_thread, args=session._get_current_object())
     emit('my_response', {'data': 'Connected', 'count': 0})
+
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+    print('Client disconnected', request.sid)
+
+if __name__ == '__main__':
+    socketio.run(app, host="0.0.0.0", port=80, debug=True)
