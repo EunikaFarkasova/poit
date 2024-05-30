@@ -22,6 +22,15 @@ def index():
 def test_message(message):   
     session['receive_count'] = session.get('receive_count', 0) + 1 
     print(message)
+    data = {}
+    if 'temperature' in message:
+      session['temperature'] = message['temperature']
+      data["temperature"] = message['temperature'],
+    if 'light' in message:    
+      session['light'] = message['light']    
+      data["light"] = message['light']
+    emit('my_response',
+         {'data': data, 'count': session['receive_count']})
 
 @socketio.on('disconnect_request', namespace='/test')
 def disconnect_request():
