@@ -4,6 +4,7 @@
   <title>POIT monitorovanie teploty a svetla</title>
   <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
   <script src="static/main.js"></script>
  </head>
  <body>
@@ -24,6 +25,14 @@
   <form id="disconnect" method="POST" action="#">
     <input type="submit" value="Close">
   </form> 
+  <main>
+    <div id="temp-wrapper">
+        <div id="temp-plot" style="width:600px;height:400px;"></div>
+      </div>
+      <div id="light-wrapper">
+        <div id="light-plot" style="width:600px;height:400px;"></div>
+      </div>
+  </main>
   <h2>Receive:</h2>
   <div id="log"></div>
  </body>
