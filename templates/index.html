@@ -5,6 +5,7 @@
   <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+  <script src="//cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.7/all/gauge.min.js"></script>
   <script src="static/main.js"></script>
  </head>
  <body>
@@ -28,9 +29,11 @@
   <main>
     <div id="temp-wrapper">
         <div id="temp-plot" style="width:600px;height:400px;"></div>
+        <canvas id="tempGauge"></canvas>
       </div>
       <div id="light-wrapper">
         <div id="light-plot" style="width:600px;height:400px;"></div>
+        <canvas id="lightGauge"></canvas>
       </div>
   </main>
   <h2>Receive:</h2>
