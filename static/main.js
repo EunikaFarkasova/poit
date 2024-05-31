@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    var temp;
+    var light;
+
     namespace = '/test';
     var socket;
 
@@ -37,6 +40,13 @@ $(document).ready(function() {
           return false; 
     });
     
+    $('.buttonVal').click(function(event) {
+        const val = event.target.value
+        console.log(val)
+        socket.emit('click_event', {value: val});
+        return false; 
+      });
+
     $('form#disconnect').submit(function(event) {
         socket.emit('disconnect_request');
         return false; 

@@ -1,6 +1,9 @@
+from threading import Lock
 from flask import Flask, render_template, session, request, jsonify, url_for, send_from_directory
 from flask_socketio import SocketIO, emit, disconnect    
 import time
+import serial
+from datetime import datetime
 
 async_mode = None
 
@@ -11,8 +14,46 @@ socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock() 
 
+ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
+ser.flush()
+
 def background_thread(args):
-    print(args)
+    count = 0  
+    dataList = []
+    temperature = 'false'
+    light = 'false'         
+    enable = 'false'           
+    while True:
+        if args:
+          temperature = dict(args).get('temperature')
+          light = dict(args).get('light')
+          enable = dict(args).get('enable')
+        print(args)
+        socketio.sleep(2)
+        if enable == 'true':
+          now = datetime.now()
+          datetimeString = now.strftime("%Y-%m-%d %H:%M:%S")
+          count += 1
+          line = ser.readline().decode('utf-8').rstrip()
+          data = json.loads(line)
+          print(data)
+          dataDict = {
+            "datetime": datetimeString
+          }
+          if temperature:
+             dataDict["temperature"] = data["temperature"]
+          
+          if light:
+             dataDict["light"] = data["light"]
+          
+          print(dataDict)
+          dataList.append(dataDict)
+          socketio.emit('my_response',
+                        {'data': dataDict, 'count': count},
+                        namespace='/test')
+        else:
+          dataList = []
+          count = 0
 
 @app.route('/')
 def index():
