@@ -1,0 +1,10 @@
+#temp-wrapper, #light-wrapper {
+    display: none;
+}
+main {
+    display: flex;
+}
+canvas {
+    margin: 0 auto;
+    margin-top: 20px;
+}

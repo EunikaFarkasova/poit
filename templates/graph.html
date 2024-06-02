@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>POIT monitorovanie teploty a svetla</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+
+  <script>
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+        return false;
+    };
+    const id = getUrlParameter("id")
+    console.log(id)
+    
+   $(document).ready(function(){
+     $('#heading').text('Archiv #'+id+'');
+    var x = new Array();
+    var tempY = new Array();
+    var lightY = new Array();
+    var tempTrace;
+    var lightTrace;
+    var tempLayout = {
+        title: 'Temperature data',
+        xaxis: {
+            title: 'Datetime',
+            type: 'date',
+        },
+        yaxis: {
+            title: 'Value',
+        }
+    };
+    var lightLayout = {
+        title: 'Light data',
+        xaxis: {
+            title: 'Datetime',
+            type: 'date',
+        },
+        yaxis: {
+            title: 'Value',
+        }
+    };
+
+    
+    $.ajax({
+      type: "POST",
+      url: "/dbdata/"+id,
+      success:function(data) 
+      {
+        data = JSON.parse(data);
+        n = Object.keys(data).length;
+        
+        const hasTemp = data[0].hasOwnProperty("temperature")
+        const hasLight = data[0].hasOwnProperty("light")
+        console.log(hasTemp)
+        console.log(hasLight)
+
+        for (var i=0; i< n; i++){
+          x.push(data[i].datetime);
+          if (hasTemp) {
+            tempY.push(data[i].temperature); 
+          }
+          if (hasLight) {
+            lightY.push(data[i].light); 
+          }
+        }
+        if (hasTemp) {
+            tempTrace = {
+              x: x,
+              y: tempY,
+              name: 'value',
+            };
+            var tempTraces = new Array();
+            tempTraces.push(tempTrace);
+            $('#temp-wrapper').show()
+            Plotly.newPlot($('#temp-plot')[0], tempTraces, tempLayout); 
+        }
+        if (hasLight) {
+              lightTrace = {
+                  x: x,
+                  y: lightY,
+                  name: 'value',
+              };      
+              var lightTraces = new Array();
+              lightTraces.push(lightTrace);
+              $('#light-wrapper').show()
+              Plotly.newPlot($('#light-plot')[0], lightTraces, lightLayout);  
+        }         
+      }
+    })   
+   });   
+
+  </script>
+</head>
+<body>
+    <a href="/">Home</a>
+    <a href="/archive">Archive</a>
+    <h1 id="heading">Archiv: #</h1>
+    <main>
+    <div id="temp-wrapper">
+        <div id="temp-plot" style="width:600px;height:400px;"></div>
+        <canvas id="tempGauge"></canvas>
+      </div>
+      <div id="light-wrapper">
+        <div id="light-plot" style="width:600px;height:400px;"></div>
+        <canvas id="lightGauge"></canvas>
+      </div>
+  </main>
+      
+</body>
+</html> 
